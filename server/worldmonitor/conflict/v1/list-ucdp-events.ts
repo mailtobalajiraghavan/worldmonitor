@@ -16,6 +16,10 @@ import type {
 import { cachedFetchJson } from '../../../_shared/redis';
 import { CHROME_UA } from '../../../_shared/constants';
 
+function getUcdpToken(): string {
+  return (process.env.UCDP_ACCESS_TOKEN || process.env.UC_DP_KEY || '').trim();
+}
+
 const UCDP_PAGE_SIZE = 1000;
 const MAX_PAGES = 12;
 const TRAILING_WINDOW_MS = 365 * 24 * 60 * 60 * 1000;
@@ -69,12 +73,12 @@ let discoveredVersionTimestamp = 0;
 const VERSION_CACHE_MS = 60 * 60 * 1000; // 1 hour
 
 async function fetchGedPage(version: string, page: number): Promise<any> {
+  const token = getUcdpToken();
+  const headers: Record<string, string> = { Accept: 'application/json', 'User-Agent': CHROME_UA };
+  if (token) headers['x-ucdp-access-token'] = token;
   const response = await fetch(
     `https://ucdpapi.pcr.uu.se/api/gedevents/${version}?pagesize=${UCDP_PAGE_SIZE}&page=${page}`,
-    {
-      headers: { Accept: 'application/json', 'User-Agent': CHROME_UA },
-      signal: AbortSignal.timeout(15000),
-    },
+    { headers, signal: AbortSignal.timeout(15000) },
   );
   if (!response.ok) {
     throw new Error(`UCDP GED API error (${version}, page ${page}): ${response.status}`);
