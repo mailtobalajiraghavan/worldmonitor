@@ -1634,12 +1634,15 @@ body.panel-resize-active iframe {
   line-height: 1;
   transition: color 0.15s;
 }
+
 .live-news-manage-row:hover .live-news-manage-row-remove-x {
   display: inline;
 }
+
 .live-news-manage-row-remove-x:hover {
   color: var(--red);
 }
+
 .live-news-manage-edit {
   padding: 4px 8px;
   font-size: 10px;
@@ -1980,10 +1983,12 @@ body.panel-resize-active iframe {
   background: rgba(68, 255, 136, 0.05);
   cursor: pointer;
 }
+
 .live-news-manage-card.added:hover {
   border-color: rgba(255, 80, 80, 0.5);
   background: rgba(255, 80, 80, 0.08);
 }
+
 .live-news-manage-card:active {
   transform: scale(0.97);
 }
@@ -2045,9 +2050,18 @@ body.panel-resize-active iframe {
 .live-news-manage-card.added .live-news-manage-card-action {
   color: var(--green);
 }
-.live-news-manage-card:hover .live-news-manage-card-action { color: var(--green); }
-.live-news-manage-card.added .live-news-manage-card-action { color: var(--green); }
-.live-news-manage-card.added:hover .live-news-manage-card-action { color: var(--red); }
+
+.live-news-manage-card:hover .live-news-manage-card-action {
+  color: var(--green);
+}
+
+.live-news-manage-card.added .live-news-manage-card-action {
+  color: var(--green);
+}
+
+.live-news-manage-card.added:hover .live-news-manage-card-action {
+  color: var(--red);
+}
 
 /* Tab count badge */
 .live-news-manage-tab-count {
@@ -3379,6 +3393,9 @@ body.playback-mode .status-dot {
   position: relative;
   overflow: hidden;
   background: var(--map-bg);
+  /* Let the map library handle all touch gestures (pinch-zoom, pan)
+     instead of the browser intercepting them on mobile/Android */
+  touch-action: none;
 }
 
 .map-wrapper {
@@ -12400,6 +12417,9 @@ a.prediction-link:hover {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  /* Prevent browser from intercepting touch gestures (pinch-zoom, pan)
+     so MapLibre/deck.gl can handle them directly — fixes Android pinch-zoom */
+  touch-action: none;
 }
 
 #deckgl-basemap {
@@ -12408,6 +12428,9 @@ a.prediction-link:hover {
   left: 0;
   width: 100%;
   height: 100%;
+  /* Let MapLibre handle all touch gestures (pinch-zoom, pan, rotate)
+     instead of the browser intercepting them for page zoom on Android */
+  touch-action: none;
 }
 
 #deckgl-overlay {
@@ -12599,6 +12622,20 @@ a.prediction-link:hover {
 
 .deckgl-layer-toggles .layer-toggle:hover {
   background: var(--bg);
+}
+
+.deckgl-layer-toggles .layer-toggle.zoom-hidden .toggle-label {
+  opacity: 0.45;
+}
+
+.deckgl-layer-toggles .layer-toggle.zoom-hidden::after {
+  content: '🔍+';
+  position: absolute;
+  top: -4px;
+  right: 2px;
+  font-size: 7px;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 .deckgl-layer-toggles .layer-toggle input[type="checkbox"] {
@@ -16292,6 +16329,10 @@ body.has-breaking-alert .panels-grid {
   }
 
   .map-container-smooth {
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .map-section-smooth {
     transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 

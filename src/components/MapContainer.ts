@@ -77,6 +77,8 @@ export class MapContainer {
   private initialState: MapContainerState;
   private useDeckGL: boolean;
   private useGlobe: boolean;
+  private isResizingInternal = false;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor(container: HTMLElement, initialState: MapContainerState, preferGlobe = false) {
     this.container = container;
@@ -142,6 +144,16 @@ export class MapContainer {
     } else {
       this.initSvgMap('[MapContainer] Initializing SVG map (mobile/fallback mode)');
     }
+
+    // Automatic resize on container change (fixes gaps on load/layout shift)
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        // Skip if we are already handling resize manually via drag handlers
+        if (this.isResizingInternal) return;
+        this.resize();
+      });
+      this.resizeObserver.observe(this.container);
+    }
   }
 
   /** Switch to 3D globe mode at runtime (called from Settings). */
@@ -183,7 +195,16 @@ export class MapContainer {
     if (this.useDeckGL) { this.deckGLMap?.render(); } else { this.svgMap?.render(); }
   }
 
+  public resize(): void {
+    if (this.useDeckGL) {
+      this.deckGLMap?.resize();
+    } else {
+      this.svgMap?.resize();
+    }
+  }
+
   public setIsResizing(isResizing: boolean): void {
+    this.isResizingInternal = isResizing;
     if (this.useGlobe) { this.globeMap?.setIsResizing(isResizing); return; }
     if (this.useDeckGL) { this.deckGLMap?.setIsResizing(isResizing); } else { this.svgMap?.setIsResizing(isResizing); }
   }
@@ -671,6 +692,7 @@ export class MapContainer {
   }
 
   public destroy(): void {
+    this.resizeObserver?.disconnect();
     this.globeMap?.destroy();
     this.deckGLMap?.destroy();
     this.svgMap?.destroy();
