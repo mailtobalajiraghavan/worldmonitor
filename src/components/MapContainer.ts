@@ -257,6 +257,7 @@ export class MapContainer {
   }
 
   public setAisData(disruptions: AisDisruptionEvent[], density: AisDensityZone[]): void {
+    if (this.useGlobe) { this.globeMap?.setAisData(disruptions, density); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setAisData(disruptions, density);
     } else {
@@ -265,6 +266,7 @@ export class MapContainer {
   }
 
   public setCableActivity(advisories: CableAdvisory[], repairShips: RepairShip[]): void {
+    if (this.useGlobe) { this.globeMap?.setCableActivity(advisories, repairShips); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setCableActivity(advisories, repairShips);
     } else {
@@ -273,6 +275,7 @@ export class MapContainer {
   }
 
   public setCableHealth(healthMap: Record<string, CableHealthRecord>): void {
+    if (this.useGlobe) { this.globeMap?.setCableHealth(healthMap); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setCableHealth(healthMap);
     } else {
@@ -281,6 +284,7 @@ export class MapContainer {
   }
 
   public setProtests(events: SocialUnrestEvent[]): void {
+    if (this.useGlobe) { this.globeMap?.setProtests(events); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setProtests(events);
     } else {
@@ -289,6 +293,7 @@ export class MapContainer {
   }
 
   public setFlightDelays(delays: AirportDelayAlert[]): void {
+    if (this.useGlobe) { this.globeMap?.setFlightDelays(delays); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setFlightDelays(delays);
     } else {
@@ -312,6 +317,7 @@ export class MapContainer {
   }
 
   public setFires(fires: Array<{ lat: number; lon: number; brightness: number; frp: number; confidence: number; region: string; acq_date: string; daynight: string }>): void {
+    if (this.useGlobe) { this.globeMap?.setFires(fires); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setFires(fires);
     } else {
@@ -320,6 +326,7 @@ export class MapContainer {
   }
 
   public setTechEvents(events: TechEventMarker[]): void {
+    if (this.useGlobe) { this.globeMap?.setTechEvents(events); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setTechEvents(events);
     } else {
@@ -328,30 +335,35 @@ export class MapContainer {
   }
 
   public setUcdpEvents(events: UcdpGeoEvent[]): void {
+    if (this.useGlobe) { this.globeMap?.setUcdpEvents(events); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setUcdpEvents(events);
     }
   }
 
   public setDisplacementFlows(flows: DisplacementFlow[]): void {
+    if (this.useGlobe) { this.globeMap?.setDisplacementFlows(flows); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setDisplacementFlows(flows);
     }
   }
 
   public setClimateAnomalies(anomalies: ClimateAnomaly[]): void {
+    if (this.useGlobe) { this.globeMap?.setClimateAnomalies(anomalies); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setClimateAnomalies(anomalies);
     }
   }
 
   public setGpsJamming(hexes: GpsJamHex[]): void {
+    if (this.useGlobe) { this.globeMap?.setGpsJamming(hexes); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setGpsJamming(hexes);
     }
   }
 
   public setCyberThreats(threats: CyberThreat[]): void {
+    if (this.useGlobe) { this.globeMap?.setCyberThreats(threats); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setCyberThreats(threats);
     } else {
@@ -360,6 +372,7 @@ export class MapContainer {
   }
 
   public setIranEvents(events: import('@/services/conflict').IranEvent[]): void {
+    if (this.useGlobe) { this.globeMap?.setIranEvents(events); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setIranEvents(events);
     } else {
@@ -368,6 +381,7 @@ export class MapContainer {
   }
 
   public setNewsLocations(data: Array<{ lat: number; lon: number; title: string; threatLevel: string; timestamp?: Date }>): void {
+    if (this.useGlobe) { this.globeMap?.setNewsLocations(data); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setNewsLocations(data);
     } else {
@@ -376,6 +390,7 @@ export class MapContainer {
   }
 
   public setPositiveEvents(events: PositiveGeoEvent[]): void {
+    if (this.useGlobe) { this.globeMap?.setPositiveEvents(events); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setPositiveEvents(events);
     }
@@ -383,6 +398,7 @@ export class MapContainer {
   }
 
   public setKindnessData(points: KindnessPoint[]): void {
+    if (this.useGlobe) { this.globeMap?.setKindnessData(points); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setKindnessData(points);
     }
@@ -390,6 +406,7 @@ export class MapContainer {
   }
 
   public setHappinessScores(data: HappinessData): void {
+    if (this.useGlobe) { this.globeMap?.setHappinessScores(data); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setHappinessScores(data);
     }
@@ -397,6 +414,7 @@ export class MapContainer {
   }
 
   public setSpeciesRecoveryZones(species: SpeciesRecovery[]): void {
+    if (this.useGlobe) { this.globeMap?.setSpeciesRecoveryZones(species); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setSpeciesRecoveryZones(species);
     }
@@ -404,6 +422,7 @@ export class MapContainer {
   }
 
   public setRenewableInstallations(installations: RenewableInstallation[]): void {
+    if (this.useGlobe) { this.globeMap?.setRenewableInstallations(installations); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setRenewableInstallations(installations);
     }
@@ -494,6 +513,7 @@ export class MapContainer {
 
   // UI visibility methods
   public hideLayerToggle(layer: keyof MapLayers): void {
+    if (this.useGlobe) { this.globeMap?.hideLayerToggle(layer); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.hideLayerToggle(layer);
     } else {
@@ -502,6 +522,7 @@ export class MapContainer {
   }
 
   public setLayerLoading(layer: keyof MapLayers, loading: boolean): void {
+    if (this.useGlobe) { this.globeMap?.setLayerLoading(layer, loading); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setLayerLoading(layer, loading);
     } else {
@@ -510,6 +531,7 @@ export class MapContainer {
   }
 
   public setLayerReady(layer: keyof MapLayers, hasData: boolean): void {
+    if (this.useGlobe) { this.globeMap?.setLayerReady(layer, hasData); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.setLayerReady(layer, hasData);
     } else {
@@ -526,6 +548,7 @@ export class MapContainer {
 
   // Layer enable/disable and trigger methods
   public enableLayer(layer: keyof MapLayers): void {
+    if (this.useGlobe) { this.globeMap?.enableLayer(layer); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.enableLayer(layer);
     } else {
@@ -598,6 +621,7 @@ export class MapContainer {
   }
 
   public flashLocation(lat: number, lon: number, durationMs?: number): void {
+    if (this.useGlobe) { this.globeMap?.flashLocation(lat, lon, durationMs); return; }
     if (this.useDeckGL) {
       this.deckGLMap?.flashLocation(lat, lon, durationMs);
     } else {
