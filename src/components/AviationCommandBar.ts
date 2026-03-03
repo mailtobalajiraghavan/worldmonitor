@@ -245,7 +245,7 @@ export class AviationCommandBar {
         if (!el) return;
         const suggestions = [
             'ops IST', 'ops LHR FRA', 'flight TK1', 'price IST LHR', 'brief', 'brief TK',
-        ].filter(s => s.startsWith(val.toLowerCase()) && s !== val.toLowerCase());
+        ].filter(s => s.toLowerCase().startsWith(val.toLowerCase()) && s.toLowerCase() !== val.toLowerCase());
         if (!val || !suggestions.length) { el.innerHTML = ''; return; }
         el.innerHTML = suggestions.slice(0, 4).map(s =>
             `<button class="cmd-sug-btn" style="background:none;border:1px solid #374151;border-radius:3px;color:#9ca3af;cursor:pointer;font-size:11px;padding:2px 6px;margin:2px">${escapeHtml(s)}</button>`
