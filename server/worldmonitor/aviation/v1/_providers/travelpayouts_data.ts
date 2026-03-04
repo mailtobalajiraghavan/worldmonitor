@@ -11,6 +11,7 @@
 
 import type { PriceQuote, CabinClass, Carrier } from '../../../../../src/generated/server/worldmonitor/aviation/v1/service_server';
 import { cachedFetchJson } from '../../../../_shared/redis';
+import { CHROME_UA } from '../../../../_shared/constants';
 
 const BASE_V2 = 'https://api.travelpayouts.com/v2/prices';
 const BASE_V3 = 'https://api.travelpayouts.com/v3';
@@ -155,6 +156,7 @@ function makeHeaders(token: string): Record<string, string> {
         'X-Access-Token': token,
         'Accept': 'application/json',
         'Accept-Encoding': 'gzip, deflate',
+        'User-Agent': CHROME_UA,
     };
 }
 
@@ -198,7 +200,7 @@ export async function searchPricesTravelpayouts(opts: {
     market: string;
     token: string;
 }): Promise<TravelpayoutsResult> {
-    const { origin, destination, departureDate, returnDate, adults, cabin, nonstopOnly, maxResults, currency, market, token } = opts;
+    const { origin, destination, departureDate, returnDate, adults: _adults, cabin, nonstopOnly, maxResults, currency, market, token } = opts;
     const now = Date.now();
     const tripClass = CABIN_CLASS_MAP[cabin] ?? 0;
     const currency_ = currency || 'usd';

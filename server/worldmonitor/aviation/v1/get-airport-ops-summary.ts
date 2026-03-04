@@ -12,6 +12,7 @@ import {
     fetchNotamClosures,
     determineSeverity,
     parseStringArray,
+    DEFAULT_WATCHED_AIRPORTS,
 } from './_shared';
 
 const CACHE_TTL = 300; // 5 minutes
@@ -23,7 +24,7 @@ export async function getAirportOpsSummary(
     const rawAirports = parseStringArray(req.airports);
     const requested = rawAirports.length > 0
         ? rawAirports.map(a => a.toUpperCase())
-        : ['IST', 'ESB', 'SAW', 'LHR', 'FRA', 'CDG'];
+        : DEFAULT_WATCHED_AIRPORTS;
 
     const cacheKey = `aviation:ops-summary:v1:${requested.sort().join(',')}`;
     const now = Date.now();

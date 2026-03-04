@@ -61,7 +61,7 @@ export async function getFlightStatus(
     const cacheKey = `aviation:status:${flightNumber}:${date}:${origin}:v1`;
     const now = Date.now();
 
-    if (!flightNumber) {
+    if (!flightNumber || flightNumber.length > 10) {
         return { flights: [], source: 'error', cacheHit: false };
     }
 

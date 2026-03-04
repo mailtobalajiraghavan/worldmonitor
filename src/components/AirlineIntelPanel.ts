@@ -119,6 +119,18 @@ export class AirlineIntelPanel extends Panel {
         // Add styling class to inherited content div
         this.content.classList.add('airline-intel-content');
 
+        // Event delegation on stable content element (survives innerHTML replacements)
+        this.content.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            if (target.id === 'priceSearchBtn' || target.closest('#priceSearchBtn')) {
+                this.pricesOrigin = ((this.content.querySelector('#priceFromInput') as HTMLInputElement)?.value || 'IST').toUpperCase();
+                this.pricesDest = ((this.content.querySelector('#priceToInput') as HTMLInputElement)?.value || 'LHR').toUpperCase();
+                this.pricesDep = (this.content.querySelector('#priceDepInput') as HTMLInputElement)?.value || '';
+                this.pricesCurrency = (this.content.querySelector('#priceCurrencySelect') as HTMLSelectElement)?.value || 'usd';
+                void this.loadTab('prices');
+            }
+        });
+
         this.addStyles();
         void this.refresh();
 
@@ -358,13 +370,6 @@ export class AirlineIntelPanel extends Panel {
             this.content.innerHTML = `${searchForm}<div class="prices-list">${rows}</div>`;
         }
 
-        this.content.querySelector('#priceSearchBtn')?.addEventListener('click', () => {
-            this.pricesOrigin = ((this.content.querySelector('#priceFromInput') as HTMLInputElement)?.value || 'IST').toUpperCase();
-            this.pricesDest = ((this.content.querySelector('#priceToInput') as HTMLInputElement)?.value || 'LHR').toUpperCase();
-            this.pricesDep = (this.content.querySelector('#priceDepInput') as HTMLInputElement)?.value || '';
-            this.pricesCurrency = (this.content.querySelector('#priceCurrencySelect') as HTMLSelectElement)?.value || 'usd';
-            void this.loadTab('prices');
-        });
     }
 
     // ---- Styles ----

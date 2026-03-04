@@ -159,7 +159,12 @@ export async function listAirportFlights(
                 // bidirectional results, two parallel calls (dep_iata + arr_iata at limit/2 each)
                 // would be needed — deferred due to AviationStack rate-limit cost.
                 const paramKey = direction === 'FLIGHT_DIRECTION_ARRIVAL' ? 'arr_iata' : 'dep_iata';
-                const url = `${AVIATIONSTACK_URL}?access_key=${apiKey}&${paramKey}=${airport}&limit=${limit}`;
+                const params = new URLSearchParams({
+                    access_key: apiKey,
+                    [paramKey]: airport,
+                    limit: String(limit),
+                });
+                const url = `${AVIATIONSTACK_URL}?${params}`;
 
                 try {
                     const resp = await fetch(url, {

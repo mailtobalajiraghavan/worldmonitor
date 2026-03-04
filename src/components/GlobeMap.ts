@@ -1211,13 +1211,26 @@ export class GlobeMap {
     critical: 'rgba(140, 10, 0, 0.50)',
   };
 
+  /** Shoelace formula: positive signed area = clockwise (for lon/lat rings). */
+  private static ringIsClockwise(ring: number[][]): boolean {
+    let sum = 0;
+    for (let i = 0; i < ring.length - 1; i++) {
+      const p1 = ring[i]!;
+      const p2 = ring[i + 1]!;
+      sum += (p2[0]! - p1[0]!) * (p2[1]! + p1[1]!);
+    }
+    return sum > 0;
+  }
+
   private flushPolygons(): void {
     if (!this.globe || !this.initialized || this.destroyed) return;
     const polys: GlobePolygon[] = [];
 
     if (this.layers.geopoliticalBoundaries) {
       for (const b of GEOPOLITICAL_BOUNDARIES) {
-        polys.push({ coords: [b.coords], name: b.name, _kind: 'boundary', boundaryType: b.boundaryType });
+        const ring: number[][] = b.coords.map((c: number[]) => [c[0]!, c[1]!]);
+        if (GlobeMap.ringIsClockwise(ring)) ring.reverse();
+        polys.push({ coords: [ring], name: b.name, _kind: 'boundary', boundaryType: b.boundaryType });
       }
     }
 
@@ -1227,6 +1240,9 @@ export class GlobeMap {
         if (ring.length < 3) continue;
         const first = ring[0]!, last = ring[ring.length - 1]!;
         if (first[0] !== last[0] || first[1] !== last[1]) ring.push(first.slice());
+        // GeoJSON exterior rings must be counter-clockwise (right-hand rule).
+        // Clockwise winding fills the complement (entire globe minus the zone).
+        if (GlobeMap.ringIsClockwise(ring)) ring.reverse();
         polys.push({
           coords: [ring],
           name: z.name,

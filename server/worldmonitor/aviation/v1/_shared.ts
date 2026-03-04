@@ -31,6 +31,7 @@ export function parseStringArray(raw: unknown): string[] {
 export const FAA_URL = 'https://nasstatus.faa.gov/api/airport-status-information';
 export const AVIATIONSTACK_URL = 'https://api.aviationstack.com/v1/flights';
 export const ICAO_NOTAM_URL = 'https://dataservices.icao.int/api/notams-realtime-list';
+export const DEFAULT_WATCHED_AIRPORTS = ['IST', 'ESB', 'SAW', 'LHR', 'FRA', 'CDG'];
 const BATCH_CONCURRENCY = 10;
 const MIN_FLIGHTS_FOR_CLOSURE = 10;
 const NOTAM_CLOSURE_QCODES = new Set(['FA', 'AH', 'AL', 'AW', 'AC', 'AM']);
@@ -256,7 +257,12 @@ async function fetchSingleAirport(
   apiKey: string, airport: MonitoredAirport
 ): Promise<FetchResult> {
   try {
-    const url = `${AVIATIONSTACK_URL}?access_key=${apiKey}&dep_iata=${airport.iata}&limit=100`;
+    const params = new URLSearchParams({
+      access_key: apiKey,
+      dep_iata: airport.iata,
+      limit: '100',
+    });
+    const url = `${AVIATIONSTACK_URL}?${params}`;
     const resp = await fetch(url, {
       headers: { 'User-Agent': CHROME_UA },
       signal: AbortSignal.timeout(5_000),
@@ -371,7 +377,7 @@ export function getRelayBaseUrl(): string | null {
     .replace(/\/$/, '');
 }
 
-export function getRelayHeaders(extra: Record<string, string> = {}): Record<string, string> {
+export function getRelayHeaders(_extra: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = { 'User-Agent': CHROME_UA };
   const relaySecret = process.env.RELAY_SHARED_SECRET;
   if (relaySecret) {

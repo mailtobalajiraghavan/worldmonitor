@@ -5,7 +5,7 @@ import type {
     CarrierOpsSummary,
 } from '../../../../src/generated/server/worldmonitor/aviation/v1/service_server';
 import { cachedFetchJson } from '../../../_shared/redis';
-import { parseStringArray } from './_shared';
+import { parseStringArray, DEFAULT_WATCHED_AIRPORTS } from './_shared';
 import { listAirportFlights } from './list-airport-flights';
 
 const CACHE_TTL = 300;
@@ -15,7 +15,7 @@ export async function getCarrierOps(
     req: GetCarrierOpsRequest,
 ): Promise<GetCarrierOpsResponse> {
     const rawAirports = parseStringArray(req.airports);
-    const airports = rawAirports.length > 0 ? rawAirports.map(a => a.toUpperCase()) : ['IST', 'ESB', 'SAW'];
+    const airports = rawAirports.length > 0 ? rawAirports.map(a => a.toUpperCase()) : DEFAULT_WATCHED_AIRPORTS.slice(0, 3);
     const minFlights = req.minFlights ?? 3;
     const cacheKey = `aviation:carrier-ops:${airports.sort().join(',')}:v1`;
     const now = Date.now();
@@ -24,7 +24,9 @@ export async function getCarrierOps(
         const result = await cachedFetchJson<{ carriers: CarrierOpsSummary[] }>(
             cacheKey, CACHE_TTL, async () => {
                 // Fetch flights for each airport
-                const allFlights: import('../../../../src/generated/server/worldmonitor/aviation/v1/service_server').FlightInstance[] = [];
+                type FI = import('../../../../src/generated/server/worldmonitor/aviation/v1/service_server').FlightInstance;
+                const allFlights: FI[] = [];
+                const flightAirportMap = new Map<FI, string>();
 
                 const flightPromises = airports.map(airport =>
                     listAirportFlights(ctx, {
@@ -40,23 +42,23 @@ export async function getCarrierOps(
                 const flightResults = await Promise.allSettled(flightPromises);
 
                 for (const result of flightResults) {
-                    if (result.status !== 'fulfilled') {
-                        // Ignore per-airport failures to match previous behavior
-                        continue;
-                    }
+                    if (result.status !== 'fulfilled') continue;
                     const { airport, flights } = result.value;
-                    allFlights.push(...flights.map(f => ({ ...f, _airport: airport })));
+                    for (const f of flights) {
+                        allFlights.push(f);
+                        flightAirportMap.set(f, airport);
+                    }
                 }
 
                 // Group by carrier.iataCode + airport
                 const groups = new Map<string, {
                     carrier: import('../../../../src/generated/server/worldmonitor/aviation/v1/service_server').Carrier;
                     airport: string;
-                    flights: import('../../../../src/generated/server/worldmonitor/aviation/v1/service_server').FlightInstance[];
+                    flights: FI[];
                 }>();
 
                 for (const f of allFlights) {
-                    const airport = (f as any)._airport ?? f.origin?.iata ?? '';
+                    const airport = flightAirportMap.get(f) ?? f.origin?.iata ?? '';
                     const iata = f.operatingCarrier?.iataCode ?? 'UNK';
                     const key = `${iata}|${airport}`;
                     if (!groups.has(key)) {

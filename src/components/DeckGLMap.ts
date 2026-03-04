@@ -4111,7 +4111,7 @@ export class DeckGLMap {
         this.aircraftFetchTimer = setInterval(() => {
           this.lastAircraftFetchCenter = null; // force refresh on poll
           this.fetchViewportAircraft();
-        }, 20_000);
+        }, 120_000); // Match server cache TTL (120s anonymous OpenSky tier)
         this.debouncedFetchAircraft();
       }
     } else {

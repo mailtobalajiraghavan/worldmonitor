@@ -6,7 +6,7 @@ import type {
 } from '../../../../src/generated/server/worldmonitor/aviation/v1/service_server';
 import { cachedFetchJson } from '../../../_shared/redis';
 import { CHROME_UA } from '../../../_shared/constants';
-import { parseStringArray } from './_shared';
+import { parseStringArray, xmlParser } from './_shared';
 
 const CACHE_TTL = 900; // 15 minutes
 
@@ -22,23 +22,28 @@ interface RssItem {
     link?: string;
     pubDate?: string;
     description?: string;
-    [key: string]: unknown;
-}
-
-function extractText(xmlStr: string, tag: string): string {
-    const m = xmlStr.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>|<${tag}[^>]*>([\\s\\S]*?)</${tag}>`));
-    return (m?.[1] ?? m?.[2] ?? '').trim();
+    _source: string;
 }
 
 function parseRssItems(xml: string, sourceName: string): RssItem[] {
-    const itemMatches = xml.match(/<item>([\s\S]*?)<\/item>/g) ?? [];
-    return itemMatches.slice(0, 30).map(itemXml => ({
-        title: extractText(itemXml, 'title'),
-        link: extractText(itemXml, 'link') || extractText(itemXml, 'guid'),
-        pubDate: extractText(itemXml, 'pubDate'),
-        description: extractText(itemXml, 'description'),
-        _source: sourceName,
-    }));
+    try {
+        const parsed = xmlParser.parse(xml);
+        const channel = parsed?.rss?.channel ?? parsed?.feed ?? {};
+        const rawItems: unknown[] = Array.isArray(channel.item) ? channel.item
+            : channel.item ? [channel.item]
+            : Array.isArray(channel.entry) ? channel.entry
+            : channel.entry ? [channel.entry] : [];
+
+        return rawItems.slice(0, 30).map((item: any) => ({
+            title: String(item?.title ?? '').trim(),
+            link: String(item?.link ?? item?.guid ?? '').trim(),
+            pubDate: String(item?.pubDate ?? item?.published ?? item?.updated ?? '').trim(),
+            description: String(item?.description ?? item?.summary ?? item?.content ?? '').trim(),
+            _source: sourceName,
+        }));
+    } catch {
+        return [];
+    }
 }
 
 function matchesEntities(text: string, entities: string[]): string[] {
