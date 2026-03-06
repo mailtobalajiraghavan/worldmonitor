@@ -249,8 +249,7 @@ export class LiveWebcamsPanel extends Panel {
       return `http://localhost:${getLocalApiPort()}/api/youtube-embed?${params.toString()}`;
     }
     const vq = quality !== 'auto' ? `&vq=${quality}` : '';
-    const origin = encodeURIComponent(window.location.origin);
-    return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&origin=${origin}${vq}`;
+    return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&origin=${window.location.origin}${vq}`;
   }
 
   private createIframe(feed: WebcamFeed): HTMLIFrameElement {
@@ -374,6 +373,7 @@ export class LiveWebcamsPanel extends Panel {
 
     // YouTube native API (web) posts JSON strings: '{"event":"onReady",...}'
     if (typeof msg === 'string') {
+      if (msg[0] !== '{') return;
       try {
         const parsed = JSON.parse(msg) as { event?: string; info?: { playerState?: number } };
         if (parsed.event === 'onReady' || parsed.event === 'initialDelivery') {
