@@ -34,10 +34,12 @@ async function fetchGpsJamData() {
   if (cached && now - cachedAt < CACHE_TTL) return cached;
   if (now < negUntil) return null;
 
-  let data = await readFromRedis(REDIS_KEY);
+  let data;
+  try { data = await readFromRedis(REDIS_KEY); } catch { data = null; }
 
   if (!data) {
-    const v1 = await readFromRedis(REDIS_KEY_V1);
+    let v1;
+    try { v1 = await readFromRedis(REDIS_KEY_V1); } catch { v1 = null; }
     if (v1?.hexes) {
       data = {
         ...v1,

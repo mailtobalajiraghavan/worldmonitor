@@ -186,8 +186,23 @@ async function seedRedis(output) {
   }
   console.error(`[gpsjam] Redis SET v2 result:`, await v2Resp.json());
 
-  // Dual-write v1 (same data, same TTL)
-  const v1Body = JSON.stringify(['SET', REDIS_KEY_V1, payload, 'EX', REDIS_TTL]);
+  // Dual-write v1 in old schema shape so pre-deploy code can parse it
+  const v1Output = {
+    ...output,
+    source: output.source || 'wingbits',
+    hexes: output.hexes.map(hex => ({
+      h3: hex.h3,
+      lat: hex.lat,
+      lon: hex.lon,
+      level: hex.level,
+      region: hex.region,
+      pct: hex.npAvg <= 0.5 ? 15 : hex.npAvg <= 1.0 ? 5 : 0,
+      good: Math.max(0, hex.aircraftCount - hex.sampleCount),
+      bad: hex.sampleCount,
+      total: hex.aircraftCount,
+    })),
+  };
+  const v1Body = JSON.stringify(['SET', REDIS_KEY_V1, JSON.stringify(v1Output), 'EX', REDIS_TTL]);
   const v1Resp = await fetch(redisUrl, {
     method: 'POST',
     headers: { Authorization: `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
