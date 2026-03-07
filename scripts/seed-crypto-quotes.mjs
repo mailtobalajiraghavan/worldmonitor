@@ -7,21 +7,23 @@ loadEnvFile(import.meta.url);
 const CANONICAL_KEY = 'market:crypto:v1';
 const CACHE_TTL = 3600; // 1 hour
 
+// Keep in sync with src/config/markets.ts CRYPTO_MAP & server/_shared.ts CRYPTO_META
 const CRYPTO_IDS = [
-  'bitcoin', 'ethereum', 'tether', 'binancecoin', 'solana',
-  'ripple', 'usd-coin', 'cardano', 'dogecoin', 'tron',
+  'bitcoin', 'ethereum', 'binancecoin', 'solana',
+  'ripple', 'cardano', 'dogecoin', 'tron',
+  'avalanche-2', 'chainlink',
 ];
 const CRYPTO_META = {
   bitcoin: { name: 'Bitcoin', symbol: 'BTC' },
   ethereum: { name: 'Ethereum', symbol: 'ETH' },
-  tether: { name: 'Tether', symbol: 'USDT' },
   binancecoin: { name: 'BNB', symbol: 'BNB' },
   solana: { name: 'Solana', symbol: 'SOL' },
   ripple: { name: 'XRP', symbol: 'XRP' },
-  'usd-coin': { name: 'USD Coin', symbol: 'USDC' },
   cardano: { name: 'Cardano', symbol: 'ADA' },
   dogecoin: { name: 'Dogecoin', symbol: 'DOGE' },
   tron: { name: 'TRON', symbol: 'TRX' },
+  'avalanche-2': { name: 'Avalanche', symbol: 'AVAX' },
+  chainlink: { name: 'Chainlink', symbol: 'LINK' },
 };
 
 async function fetchWithRateLimitRetry(url, maxAttempts = 5, headers = { Accept: 'application/json', 'User-Agent': CHROME_UA }) {

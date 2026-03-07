@@ -69,18 +69,18 @@ export const YAHOO_ONLY_SYMBOLS = new Set([
   'GC=F', 'CL=F', 'NG=F', 'SI=F', 'HG=F',
 ]);
 
-// Known crypto IDs and their metadata
+// Known crypto IDs and their metadata — keep in sync with src/config/markets.ts & scripts/seed-crypto-quotes.mjs
 export const CRYPTO_META: Record<string, { name: string; symbol: string }> = {
   bitcoin: { name: 'Bitcoin', symbol: 'BTC' },
   ethereum: { name: 'Ethereum', symbol: 'ETH' },
-  tether: { name: 'Tether', symbol: 'USDT' },
   binancecoin: { name: 'BNB', symbol: 'BNB' },
   solana: { name: 'Solana', symbol: 'SOL' },
   ripple: { name: 'XRP', symbol: 'XRP' },
-  'usd-coin': { name: 'USD Coin', symbol: 'USDC' },
   cardano: { name: 'Cardano', symbol: 'ADA' },
   dogecoin: { name: 'Dogecoin', symbol: 'DOGE' },
   tron: { name: 'TRON', symbol: 'TRX' },
+  'avalanche-2': { name: 'Avalanche', symbol: 'AVAX' },
+  chainlink: { name: 'Chainlink', symbol: 'LINK' },
 };
 
 // ========================================================================
@@ -283,14 +283,15 @@ export async function fetchCoinGeckoMarkets(
 const COINPAPRIKA_ID_MAP: Record<string, string> = {
   bitcoin: 'btc-bitcoin',
   ethereum: 'eth-ethereum',
-  tether: 'usdt-tether',
   binancecoin: 'bnb-binance-coin',
   solana: 'sol-solana',
   ripple: 'xrp-ripple',
-  'usd-coin': 'usdc-usd-coin',
   cardano: 'ada-cardano',
   dogecoin: 'doge-dogecoin',
   tron: 'trx-tron',
+  'avalanche-2': 'avax-avalanche',
+  chainlink: 'link-chainlink',
+  tether: 'usdt-tether',
   'usd-coin': 'usdc-usd-coin',
   dai: 'dai-dai',
   'first-digital-usd': 'fdusd-first-digital-usd',
