@@ -2203,7 +2203,8 @@ function classifyFetchLlm(titles, apiKey, apiUrl, model) {
     });
 
     const parsed = new URL(apiUrl);
-    const req = https.request(parsed, {
+    const transport = parsed.protocol === 'http:' ? http : https;
+    const req = transport.request(parsed, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,

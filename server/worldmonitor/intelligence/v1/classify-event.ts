@@ -93,7 +93,13 @@ Return: {"level":"...","category":"..."}`;
           try {
             parsed = JSON.parse(raw);
           } catch {
-            return null;
+            const jsonMatch = raw.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return null;
+            try {
+              parsed = JSON.parse(jsonMatch[0]);
+            } catch {
+              return null;
+            }
           }
 
           const level = VALID_LEVELS.includes(parsed.level ?? '') ? parsed.level! : null;
