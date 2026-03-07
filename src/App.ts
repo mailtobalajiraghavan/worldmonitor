@@ -320,7 +320,7 @@ export class App {
       loadDataForLayer: (layer) => { void this.dataLoader.loadDataForLayer(layer as keyof MapLayers); },
       waitForAisData: () => this.dataLoader.waitForAisData(),
       syncDataFreshnessWithLayers: () => this.dataLoader.syncDataFreshnessWithLayers(),
-      ensureCorrectZones: () => this.panelLayout.ensureCorrectZones(),
+      applyPanelSettings: () => this.panelLayout.applyPanelSettings(),
       refreshOpenCountryBrief: () => this.countryIntel.refreshOpenBrief(),
     });
 

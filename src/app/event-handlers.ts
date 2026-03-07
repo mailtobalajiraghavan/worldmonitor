@@ -59,7 +59,7 @@ export interface EventHandlerCallbacks {
   loadDataForLayer: (layer: string) => void;
   waitForAisData: () => void;
   syncDataFreshnessWithLayers: () => void;
-  ensureCorrectZones: () => void;
+  applyPanelSettings: () => void;
   refreshOpenCountryBrief?: () => void;
 }
 
@@ -262,7 +262,7 @@ export class EventHandlerManager implements AppModule {
       if (e.key === STORAGE_KEYS.panels && e.newValue) {
         try {
           this.ctx.panelSettings = JSON.parse(e.newValue) as Record<string, PanelConfig>;
-          this.applyPanelSettings();
+          this.callbacks.applyPanelSettings();
           this.ctx.unifiedSettings?.refreshPanelToggles();
         } catch (_) { }
       }
@@ -758,7 +758,7 @@ export class EventHandlerManager implements AppModule {
           config.enabled = !config.enabled;
           trackPanelToggled(key, config.enabled);
           saveToStorage(STORAGE_KEYS.panels, this.ctx.panelSettings);
-          this.applyPanelSettings();
+          this.callbacks.applyPanelSettings();
         }
       },
       getDisabledSources: () => this.ctx.disabledSources,
@@ -1158,24 +1158,5 @@ export class EventHandlerManager implements AppModule {
     });
     INTEL_SOURCES.forEach(f => sources.add(f.name));
     return Array.from(sources).sort((a, b) => a.localeCompare(b));
-  }
-
-  applyPanelSettings(): void {
-    Object.entries(this.ctx.panelSettings).forEach(([key, config]) => {
-      if (key === 'map') {
-        const mapSection = document.getElementById('mapSection');
-        if (mapSection) {
-          mapSection.classList.toggle('hidden', !config.enabled);
-          const mainContent = document.querySelector('.main-content');
-          if (mainContent) {
-            mainContent.classList.toggle('map-hidden', !config.enabled);
-          }
-          this.callbacks.ensureCorrectZones();
-        }
-        return;
-      }
-      const panel = this.ctx.panels[key];
-      panel?.toggle(config.enabled);
-    });
   }
 }
