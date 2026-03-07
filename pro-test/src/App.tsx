@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'motion/react';
 import {
   Globe, Activity, ShieldAlert, Zap, Terminal, Database,
@@ -13,7 +14,25 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAACnaYgHIyxclu8Tj';
 const PRO_URL = 'https://worldmonitor.app/pro';
 
 declare global {
-  interface Window { turnstile?: { getResponse: (id?: string) => string | undefined; reset: (id?: string) => void; }; }
+  interface Window { turnstile?: { render: (el: string | HTMLElement, opts: Record<string, unknown>) => string; getResponse: (id?: string) => string | undefined; reset: (id?: string) => void; remove: (id?: string) => void; }; }
+}
+
+function useTurnstile(containerRef: React.RefObject<HTMLDivElement | null>) {
+  const widgetIdRef = React.useRef<string | undefined>();
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const tryRender = () => {
+      if (!window.turnstile || widgetIdRef.current) return;
+      widgetIdRef.current = window.turnstile.render(el, { sitekey: TURNSTILE_SITE_KEY, theme: 'dark', size: 'invisible' });
+    };
+    tryRender();
+    if (!widgetIdRef.current) {
+      const iv = setInterval(() => { tryRender(); if (widgetIdRef.current) clearInterval(iv); }, 500);
+      return () => clearInterval(iv);
+    }
+  }, [containerRef]);
+  return widgetIdRef;
 }
 
 function getRefCode(): string | undefined {
@@ -77,15 +96,30 @@ function showReferralSuccess(formEl: HTMLFormElement, data: { referralCode?: str
   formEl.replaceWith(successDiv);
 }
 
-async function submitWaitlist(email: string, formEl: HTMLFormElement) {
+function WaitlistForm({ buttonText, className }: { buttonText: string; className?: string }) {
+  const turnstileRef = React.useRef<HTMLDivElement>(null);
+  const widgetIdRef = useTurnstile(turnstileRef);
+  return (
+    <form className={className} onSubmit={(e) => { e.preventDefault(); const form = e.currentTarget; const email = new FormData(form).get('email') as string; submitWaitlist(email, form, widgetIdRef.current); }}>
+      <input type="text" name="website" autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute opacity-0 h-0 w-0 pointer-events-none" />
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input type="email" name="email" placeholder="Enter your email" className="flex-1 bg-wm-card border border-wm-border rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-wm-green transition-colors font-mono" required aria-label="Email address for waitlist" />
+        <button type="submit" className="bg-wm-green text-wm-bg px-6 py-3 rounded-sm font-mono text-sm uppercase tracking-wider font-bold hover:bg-green-400 transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+          {buttonText}
+        </button>
+      </div>
+      <div ref={turnstileRef} />
+    </form>
+  );
+}
+
+async function submitWaitlist(email: string, formEl: HTMLFormElement, widgetId?: string) {
   const btn = formEl.querySelector('button[type="submit"]') as HTMLButtonElement;
   const origText = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Submitting...';
 
   const honeypot = (formEl.querySelector('input[name="website"]') as HTMLInputElement)?.value || '';
-  const turnstileWidget = formEl.querySelector('.cf-turnstile') as HTMLElement | null;
-  const widgetId = turnstileWidget?.dataset.widgetId;
   const turnstileToken = window.turnstile?.getResponse(widgetId) || '';
   const ref = getRefCode();
 
@@ -173,24 +207,7 @@ const Hero = () => (
           Track geopolitics, markets, energy, infrastructure, and natural events across 435+ sources. AI that tells you what it means — delivered where you work.
         </p>
 
-        <form className="flex flex-col gap-3 max-w-md mx-auto" onSubmit={(e) => { e.preventDefault(); const form = e.currentTarget; const email = new FormData(form).get('email') as string; submitWaitlist(email, form); }}>
-          {/* Honeypot — hidden from humans, bots auto-fill it */}
-          <input type="text" name="website" autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute opacity-0 h-0 w-0 pointer-events-none" />
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              className="flex-1 bg-wm-card border border-wm-border rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-wm-green transition-colors font-mono"
-              required
-              aria-label="Email address for waitlist"
-            />
-            <button type="submit" className="bg-wm-green text-wm-bg px-6 py-3 rounded-sm font-mono text-sm uppercase tracking-wider font-bold hover:bg-green-400 transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
-              Join Pro Waitlist <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="cf-turnstile mx-auto" data-sitekey={TURNSTILE_SITE_KEY} data-theme="dark" data-size="compact" />
-        </form>
+        <WaitlistForm buttonText="Join Pro Waitlist →" className="flex flex-col gap-3 max-w-md mx-auto" />
         <div className="flex items-center justify-center gap-4 mt-4">
           <p className="text-xs text-wm-muted font-mono">Launching soon</p>
           <span className="text-wm-border">|</span>
@@ -756,23 +773,7 @@ const Footer = () => (
   <footer className="border-t border-wm-border bg-[#020202] pt-24 pb-12 px-6 text-center" id="waitlist">
     <div className="max-w-2xl mx-auto mb-16">
       <h2 className="text-4xl font-display font-bold mb-6">Be first in line.</h2>
-      <form className="flex flex-col gap-3 max-w-md mx-auto mb-6" onSubmit={(e) => { e.preventDefault(); const form = e.currentTarget; const email = new FormData(form).get('email') as string; submitWaitlist(email, form); }}>
-        <input type="text" name="website" autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute opacity-0 h-0 w-0 pointer-events-none" />
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            className="flex-1 bg-wm-card border border-wm-border rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-wm-green transition-colors font-mono"
-            required
-            aria-label="Email address for waitlist"
-          />
-          <button type="submit" className="bg-wm-green text-wm-bg px-6 py-3 rounded-sm font-mono text-sm uppercase tracking-wider font-bold hover:bg-green-400 transition-colors whitespace-nowrap">
-            Join Waitlist
-          </button>
-        </div>
-        <div className="cf-turnstile mx-auto" data-sitekey={TURNSTILE_SITE_KEY} data-theme="dark" data-size="compact" />
-      </form>
+      <WaitlistForm buttonText="Join Waitlist" className="flex flex-col gap-3 max-w-md mx-auto mb-6" />
       <p className="text-sm text-wm-muted">
         Looking for Enterprise? <a href="mailto:enterprise@worldmonitor.app" className="text-wm-text underline underline-offset-4 hover:text-wm-green transition-colors">Contact us</a>.
       </p>
