@@ -5,7 +5,9 @@ import {
   ArrowRight, Check, Lock, Server, Cpu, Layers,
   Bell, Brain, Key, Plug, PanelTop, ExternalLink,
   BarChart3, Clock, Radio, Ship, Plane, Flame,
-  Cable, Wifi, MapPin, Users, TrendingUp
+  Cable, Wifi, MapPin, Users, TrendingUp,
+  Filter, Lightbulb, SlidersHorizontal, Telescope,
+  Newspaper, LineChart, Search, Shield, Building2
 } from 'lucide-react';
 import { t } from './i18n';
 
@@ -164,6 +166,7 @@ const Logo = () => (
   </a>
 );
 
+/* ─── 0. Navbar ─── */
 const Navbar = () => (
   <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b-0 border-x-0 rounded-none" aria-label="Main navigation">
     <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -181,6 +184,7 @@ const Navbar = () => (
   </nav>
 );
 
+/* ─── 1. Hero (draft headline + current waitlist form) ─── */
 const WiredBadge = () => (
   <a
     href="https://www.wired.me/story/the-music-streaming-ceo-who-built-a-global-war-map"
@@ -208,8 +212,11 @@ const Hero = () => (
           {t('hero.title1')} <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-wm-green to-emerald-300">{t('hero.title2')}</span>
         </h1>
-        <p className="text-lg md:text-xl text-wm-muted mb-8 max-w-2xl mx-auto font-light">
+        <p className="text-lg md:text-xl text-wm-muted mb-4 max-w-2xl mx-auto font-light">
           {t('hero.subtitle')}
+        </p>
+        <p className="text-sm text-wm-muted/80 mb-8 max-w-2xl mx-auto font-mono">
+          {t('hero.missionLine')}
         </p>
 
         <form className="flex flex-col gap-3 max-w-md mx-auto" onSubmit={(e) => { e.preventDefault(); const form = e.currentTarget; const email = new FormData(form).get('email') as string; submitWaitlist(email, form); }}>
@@ -241,8 +248,113 @@ const Hero = () => (
   </section>
 );
 
+/* ─── 2. Social proof (current — WIRED badge already in hero) ─── */
+const SocialProof = () => (
+  <section className="border-y border-wm-border bg-wm-card/30 py-16 px-6">
+    <div className="max-w-5xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-12">
+        {[
+          { value: "2M+", label: t('socialProof.uniqueVisitors') },
+          { value: "216K", label: t('socialProof.peakDailyUsers') },
+          { value: "190+", label: t('socialProof.countriesReached') },
+          { value: "435+", label: t('socialProof.liveDataSources') },
+        ].map((stat, i) => (
+          <div key={i}>
+            <p className="text-3xl md:text-4xl font-display font-bold text-wm-green">{stat.value}</p>
+            <p className="text-xs font-mono text-wm-muted uppercase tracking-widest mt-1">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+      <blockquote className="max-w-3xl mx-auto text-center">
+        <p className="text-lg md:text-xl text-wm-muted italic leading-relaxed">
+          "{t('socialProof.quote')}"
+        </p>
+        <footer className="mt-6 flex items-center justify-center gap-3">
+          <div className="text-sm">
+            <span className="text-wm-text font-bold">Elie Habib</span>
+            <span className="text-wm-muted"> — {t('socialProof.ceo')} </span>
+            <a href="https://anghami.com" target="_blank" rel="noreferrer" className="text-wm-muted underline underline-offset-4 hover:text-wm-text transition-colors">Anghami</a>
+            <span className="text-wm-muted">, {t('socialProof.asToldTo')} </span>
+            <a href="https://www.wired.me/story/the-music-streaming-ceo-who-built-a-global-war-map" target="_blank" rel="noreferrer" className="text-wm-text underline underline-offset-4 hover:text-wm-green transition-colors">WIRED</a>
+          </div>
+        </footer>
+      </blockquote>
+    </div>
+  </section>
+);
+
+/* ─── 3. Two-path split (new — from draft) ─── */
+const TwoPathSplit = () => (
+  <section className="py-24 px-6 max-w-5xl mx-auto" id="tiers">
+    <div className="grid md:grid-cols-2 gap-8">
+      <div className="bg-wm-card border border-wm-green p-8 relative border-glow">
+        <div className="absolute top-0 left-0 w-full h-1 bg-wm-green" />
+        <h3 className="font-display text-2xl font-bold mb-2">{t('twoPath.proTitle')}</h3>
+        <p className="text-sm text-wm-muted mb-6">{t('twoPath.proDesc')}</p>
+        <ul className="space-y-3 mb-8">
+          {[t('twoPath.proF1'), t('twoPath.proF2'), t('twoPath.proF3'), t('twoPath.proF4'), t('twoPath.proF5'), t('twoPath.proF6')].map((f, i) => (
+            <li key={i} className="flex items-start gap-3 text-sm">
+              <Check className="w-4 h-4 shrink-0 mt-0.5 text-wm-green" aria-hidden="true" />
+              <span className="text-wm-muted">{f}</span>
+            </li>
+          ))}
+        </ul>
+        <a href="#waitlist" className="block text-center py-2.5 rounded-sm font-mono text-xs uppercase tracking-wider font-bold bg-wm-green text-wm-bg hover:bg-green-400 transition-colors">
+          {t('twoPath.proCta')}
+        </a>
+      </div>
+
+      <div className="bg-wm-card border border-wm-border p-8">
+        <h3 className="font-display text-2xl font-bold mb-2">{t('twoPath.entTitle')}</h3>
+        <p className="text-sm text-wm-muted mb-6">{t('twoPath.entDesc')}</p>
+        <ul className="space-y-3 mb-8">
+          {[t('twoPath.entF1'), t('twoPath.entF2'), t('twoPath.entF3'), t('twoPath.entF4'), t('twoPath.entF5')].map((f, i) => (
+            <li key={i} className="flex items-start gap-3 text-sm">
+              <Check className="w-4 h-4 shrink-0 mt-0.5 text-wm-muted" aria-hidden="true" />
+              <span className="text-wm-muted">{f}</span>
+            </li>
+          ))}
+        </ul>
+        <a href="mailto:enterprise@worldmonitor.app" className="block text-center py-2.5 rounded-sm font-mono text-xs uppercase tracking-wider font-bold border border-wm-border text-wm-muted hover:text-wm-text hover:border-wm-text transition-colors">
+          {t('twoPath.entCta')}
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
+/* ─── 4. Why Upgrade (new — from draft) ─── */
+const WhyUpgrade = () => {
+  const items = [
+    { icon: <Filter className="w-6 h-6" aria-hidden="true" />, title: t('whyUpgrade.noiseTitle'), desc: t('whyUpgrade.noiseDesc') },
+    { icon: <Lightbulb className="w-6 h-6" aria-hidden="true" />, title: t('whyUpgrade.fasterTitle'), desc: t('whyUpgrade.fasterDesc') },
+    { icon: <SlidersHorizontal className="w-6 h-6" aria-hidden="true" />, title: t('whyUpgrade.controlTitle'), desc: t('whyUpgrade.controlDesc') },
+    { icon: <Telescope className="w-6 h-6" aria-hidden="true" />, title: t('whyUpgrade.deeperTitle'), desc: t('whyUpgrade.deeperDesc') },
+  ];
+
+  return (
+    <section className="py-24 px-6 border-t border-wm-border bg-wm-card/20">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-5xl font-display font-bold mb-16 text-center">{t('whyUpgrade.title')}</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {items.map((item, i) => (
+            <div key={i} className="flex gap-5">
+              <div className="text-wm-green shrink-0 mt-1">{item.icon}</div>
+              <div>
+                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                <p className="text-sm text-wm-muted leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ─── 5. Live Dashboard Embed (current) ─── */
 const LivePreview = () => (
-  <section className="px-6 pb-16 -mt-4">
+  <section className="px-6 py-16">
     <div className="max-w-6xl mx-auto">
       <div className="relative rounded-lg overflow-hidden border border-wm-border shadow-2xl shadow-wm-green/5">
         <div className="bg-wm-card px-4 py-2 border-b border-wm-border flex items-center gap-3">
@@ -289,6 +401,7 @@ const LivePreview = () => (
   </section>
 );
 
+/* ─── 6. Source Marquee (current) ─── */
 const SourceMarquee = () => {
   const sources = [
     "ACLED", "UCDP", "GDELT", "NASA FIRMS", "USGS", "OpenSky", "AISStream",
@@ -312,142 +425,7 @@ const SourceMarquee = () => {
   );
 };
 
-const SocialProof = () => (
-  <section className="border-y border-wm-border bg-wm-card/30 py-16 px-6">
-    <div className="max-w-5xl mx-auto">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-12">
-        {[
-          { value: "2M+", label: t('socialProof.uniqueVisitors') },
-          { value: "216K", label: t('socialProof.peakDailyUsers') },
-          { value: "190+", label: t('socialProof.countriesReached') },
-          { value: "435+", label: t('socialProof.liveDataSources') },
-        ].map((stat, i) => (
-          <div key={i}>
-            <p className="text-3xl md:text-4xl font-display font-bold text-wm-green">{stat.value}</p>
-            <p className="text-xs font-mono text-wm-muted uppercase tracking-widest mt-1">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-      <blockquote className="max-w-3xl mx-auto text-center">
-        <p className="text-lg md:text-xl text-wm-muted italic leading-relaxed">
-          "{t('socialProof.quote')}"
-        </p>
-        <footer className="mt-6 flex items-center justify-center gap-3">
-          <div className="text-sm">
-            <span className="text-wm-text font-bold">Elie Habib</span>
-            <span className="text-wm-muted"> — {t('socialProof.ceo')} </span>
-            <a href="https://anghami.com" target="_blank" rel="noreferrer" className="text-wm-muted underline underline-offset-4 hover:text-wm-text transition-colors">Anghami</a>
-            <span className="text-wm-muted">, {t('socialProof.asToldTo')} </span>
-            <a href="https://www.wired.me/story/the-music-streaming-ceo-who-built-a-global-war-map" target="_blank" rel="noreferrer" className="text-wm-text underline underline-offset-4 hover:text-wm-green transition-colors">WIRED</a>
-          </div>
-        </footer>
-      </blockquote>
-    </div>
-  </section>
-);
-
-const DataCoverage = () => {
-  const domains = [
-    { icon: <Radio className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.geopolitical'), desc: t('dataCoverage.geopoliticalDesc') },
-    { icon: <Plane className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.aviation'), desc: t('dataCoverage.aviationDesc') },
-    { icon: <Ship className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.maritime'), desc: t('dataCoverage.maritimeDesc') },
-    { icon: <Flame className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.fire'), desc: t('dataCoverage.fireDesc') },
-    { icon: <Cable className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.cables'), desc: t('dataCoverage.cablesDesc') },
-    { icon: <Wifi className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.internet'), desc: t('dataCoverage.internetDesc') },
-    { icon: <MapPin className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.infra'), desc: t('dataCoverage.infraDesc') },
-    { icon: <TrendingUp className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.markets'), desc: t('dataCoverage.marketsDesc') },
-    { icon: <ShieldAlert className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.cyber'), desc: t('dataCoverage.cyberDesc') },
-    { icon: <Globe className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.gdelt'), desc: t('dataCoverage.gdeltDesc') },
-    { icon: <Users className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.unrest'), desc: t('dataCoverage.unrestDesc') },
-    { icon: <Activity className="w-5 h-5" aria-hidden="true" />, name: t('dataCoverage.seismology'), desc: t('dataCoverage.seismologyDesc') },
-  ];
-
-  return (
-    <section className="py-24 px-6" id="coverage">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-display font-bold mb-6">{t('dataCoverage.title')}</h2>
-          <p className="text-wm-muted max-w-2xl mx-auto">
-            {t('dataCoverage.subtitle')}
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {domains.map((d, i) => (
-            <div key={i} className="bg-wm-card border border-wm-border p-4 hover:border-wm-green/30 transition-colors">
-              <div className="text-wm-green mb-3">{d.icon}</div>
-              <h3 className="font-bold text-sm mb-1">{d.name}</h3>
-              <p className="text-xs text-wm-muted">{d.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const Tiers = () => {
-  const tiers = [
-    {
-      name: t('tiers.free'),
-      tagline: t('tiers.freeTagline'),
-      desc: t('tiers.freeDesc'),
-      features: [t('tiers.freeF1'), t('tiers.freeF2'), t('tiers.freeF3'), t('tiers.freeF4')],
-      color: "border-wm-border",
-      cta: { label: t('tiers.openDashboard'), href: "https://worldmonitor.app" }
-    },
-    {
-      name: t('tiers.pro'),
-      tagline: t('tiers.proTagline'),
-      desc: t('tiers.proDesc'),
-      features: [t('tiers.proF1'), t('tiers.proF2'), t('tiers.proF3'), t('tiers.proF4')],
-      color: "border-wm-green",
-      glow: true,
-      cta: { label: t('nav.joinWaitlist'), href: "#waitlist" }
-    },
-    {
-      name: t('tiers.enterprise'),
-      tagline: t('tiers.enterpriseTagline'),
-      desc: t('tiers.enterpriseDesc'),
-      features: [t('tiers.entF1'), t('tiers.entF2'), t('tiers.entF3'), t('tiers.entF4')],
-      color: "border-wm-border",
-      cta: { label: t('tiers.contactSales'), href: "mailto:enterprise@worldmonitor.app" }
-    }
-  ];
-
-  return (
-    <section className="py-24 px-6 max-w-7xl mx-auto" id="tiers">
-      <div className="grid md:grid-cols-3 gap-6">
-        {tiers.map((tier, i) => (
-          <div key={i} className={`bg-wm-card border ${tier.color} p-8 relative ${tier.glow ? 'border-glow' : ''}`}>
-            {tier.glow && <div className="absolute top-0 left-0 w-full h-1 bg-wm-green" />}
-            <h3 className="font-display text-2xl font-bold mb-2">{tier.name}</h3>
-            <p className="text-wm-muted font-mono text-sm mb-1">{tier.tagline}</p>
-            <p className="text-sm font-medium mb-8 pb-8 border-b border-wm-border">{tier.desc}</p>
-            <ul className="space-y-4 mb-8">
-              {tier.features.map((f, j) => (
-                <li key={j} className="flex items-start gap-3 text-sm">
-                  <Check className={`w-4 h-4 shrink-0 mt-0.5 ${tier.glow ? 'text-wm-green' : 'text-wm-muted'}`} aria-hidden="true" />
-                  <span className="text-wm-muted">{f}</span>
-                </li>
-              ))}
-            </ul>
-            <a
-              href={tier.cta.href}
-              className={`block text-center py-2.5 rounded-sm font-mono text-xs uppercase tracking-wider font-bold transition-colors ${
-                tier.glow
-                  ? 'bg-wm-green text-wm-bg hover:bg-green-400'
-                  : 'border border-wm-border text-wm-muted hover:text-wm-text hover:border-wm-text'
-              }`}
-            >
-              {tier.cta.label}
-            </a>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-};
-
+/* ─── 7. Pro Showcase + Slack Mock (current) ─── */
 const ProShowcase = () => (
   <section className="py-24 px-6 border-t border-wm-border bg-wm-card/30" id="pro">
     <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-start">
@@ -561,6 +539,35 @@ const ProShowcase = () => (
   </section>
 );
 
+/* ─── 8. Audience Personas (new — from draft) ─── */
+const AudiencePersonas = () => {
+  const personas = [
+    { icon: <Newspaper className="w-6 h-6" aria-hidden="true" />, title: t('audience.journalistsTitle'), desc: t('audience.journalistsDesc') },
+    { icon: <LineChart className="w-6 h-6" aria-hidden="true" />, title: t('audience.investorsTitle'), desc: t('audience.investorsDesc') },
+    { icon: <Search className="w-6 h-6" aria-hidden="true" />, title: t('audience.researchersTitle'), desc: t('audience.researchersDesc') },
+    { icon: <Shield className="w-6 h-6" aria-hidden="true" />, title: t('audience.securityTitle'), desc: t('audience.securityDesc') },
+    { icon: <Building2 className="w-6 h-6" aria-hidden="true" />, title: t('audience.teamsTitle'), desc: t('audience.teamsDesc') },
+  ];
+
+  return (
+    <section className="py-24 px-6">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-5xl font-display font-bold mb-16 text-center">{t('audience.title')}</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {personas.map((p, i) => (
+            <div key={i} className="bg-wm-card border border-wm-border p-6 hover:border-wm-green/30 transition-colors">
+              <div className="text-wm-green mb-4">{p.icon}</div>
+              <h3 className="font-bold mb-2">{p.title}</h3>
+              <p className="text-sm text-wm-muted">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ─── 9. API Section (current) ─── */
 const ApiSection = () => (
   <section className="py-24 px-6 border-y border-wm-border bg-[#0a0a0a]" id="api">
     <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -635,6 +642,7 @@ const ApiSection = () => (
   </section>
 );
 
+/* ─── 10. Enterprise Showcase (current + enriched CTA) ─── */
 const EnterpriseShowcase = () => (
   <section className="py-24 px-6" id="enterprise">
     <div className="max-w-7xl mx-auto">
@@ -683,7 +691,7 @@ const EnterpriseShowcase = () => (
         </div>
       </div>
 
-      <div className="data-grid">
+      <div className="data-grid mb-12">
         <div className="data-cell">
           <h5 className="font-mono text-xs text-wm-muted uppercase tracking-widest mb-2">{t('enterpriseShowcase.commodity')}</h5>
           <p className="text-sm">{t('enterpriseShowcase.commodityDesc')}</p>
@@ -701,10 +709,20 @@ const EnterpriseShowcase = () => (
           <p className="text-sm">{t('enterpriseShowcase.socDesc')}</p>
         </div>
       </div>
+
+      <div className="text-center">
+        <a
+          href="mailto:enterprise@worldmonitor.app"
+          className="inline-flex items-center gap-2 bg-wm-card border border-wm-border px-8 py-3 rounded-sm font-mono text-sm uppercase tracking-wider font-bold text-wm-muted hover:text-wm-text hover:border-wm-text transition-colors"
+        >
+          {t('enterpriseShowcase.talkToSales')} <ArrowRight className="w-4 h-4" aria-hidden="true" />
+        </a>
+      </div>
     </div>
   </section>
 );
 
+/* ─── 11. Comparison Table (simplified columns, kept technical rows) ─── */
 const PricingTable = () => {
   const rows = [
     { feature: t('pricingTable.dataRefresh'), free: t('pricingTable.f5_15min'), pro: t('pricingTable.fLt60s'), api: t('pricingTable.fPerRequest'), ent: t('pricingTable.fLiveEdge') },
@@ -756,10 +774,14 @@ const PricingTable = () => {
           </div>
         ))}
       </div>
+      <p className="text-center text-sm text-wm-muted mt-8">
+        {t('pricingTable.noteBelow')}
+      </p>
     </section>
   );
 };
 
+/* ─── 12. FAQ (draft copy — warmer tone) ─── */
 const FAQ = () => {
   const faqs = [
     { q: t('faq.q1'), a: t('faq.a1'), open: true },
@@ -768,6 +790,8 @@ const FAQ = () => {
     { q: t('faq.q4'), a: t('faq.a4') },
     { q: t('faq.q5'), a: t('faq.a5') },
     { q: t('faq.q6'), a: t('faq.a6') },
+    { q: t('faq.q7'), a: t('faq.a7') },
+    { q: t('faq.q8'), a: t('faq.a8') },
   ];
 
   return (
@@ -790,10 +814,13 @@ const FAQ = () => {
   );
 };
 
+/* ─── 13. Final CTA (draft — dual CTA) + Footer ─── */
 const Footer = () => (
   <footer className="border-t border-wm-border bg-[#020202] pt-24 pb-12 px-6 text-center" id="waitlist">
     <div className="max-w-2xl mx-auto mb-16">
-      <h2 className="text-4xl font-display font-bold mb-6">{t('footer.beFirstInLine')}</h2>
+      <h2 className="text-4xl font-display font-bold mb-4">{t('finalCta.title')}</h2>
+      <p className="text-wm-muted mb-8">{t('finalCta.subtitle')}</p>
+
       <form className="flex flex-col gap-3 max-w-md mx-auto mb-6" onSubmit={(e) => { e.preventDefault(); const form = e.currentTarget; const email = new FormData(form).get('email') as string; submitWaitlist(email, form); }}>
         <input type="text" name="website" autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute opacity-0 h-0 w-0 pointer-events-none" />
         <div className="flex flex-col sm:flex-row gap-3">
@@ -806,14 +833,18 @@ const Footer = () => (
             aria-label={t('hero.emailAriaLabel')}
           />
           <button type="submit" className="bg-wm-green text-wm-bg px-6 py-3 rounded-sm font-mono text-sm uppercase tracking-wider font-bold hover:bg-green-400 transition-colors whitespace-nowrap">
-            {t('nav.joinWaitlist')}
+            {t('finalCta.getPro')}
           </button>
         </div>
         <div className="cf-turnstile mx-auto" />
       </form>
-      <p className="text-sm text-wm-muted">
-        {t('footer.lookingForEnterprise')} <a href="mailto:enterprise@worldmonitor.app" className="text-wm-text underline underline-offset-4 hover:text-wm-green transition-colors">{t('footer.contactUs')}</a>.
-      </p>
+
+      <a
+        href="mailto:enterprise@worldmonitor.app"
+        className="inline-flex items-center gap-2 text-sm text-wm-muted hover:text-wm-text transition-colors font-mono"
+      >
+        {t('finalCta.talkToSales')} <ArrowRight className="w-3 h-3" aria-hidden="true" />
+      </a>
     </div>
 
     <div className="flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto pt-8 border-t border-wm-border/50 text-xs text-wm-muted font-mono">
@@ -829,23 +860,38 @@ const Footer = () => (
   </footer>
 );
 
+/* ─── Page Layout ─── */
 export default function App() {
   return (
     <div className="min-h-screen selection:bg-wm-green/30 selection:text-wm-green">
       <Navbar />
       <main>
+        {/* 1. Hero */}
         <Hero />
-        <LivePreview />
-        <SourceMarquee />
+        {/* 2. Social proof */}
         <SocialProof />
-        <DataCoverage />
-        <Tiers />
+        {/* 3. Two-path split */}
+        <TwoPathSplit />
+        {/* 4. Why upgrade */}
+        <WhyUpgrade />
+        {/* 5. Live dashboard embed */}
+        <LivePreview />
+        {/* 6. Source marquee */}
+        <SourceMarquee />
+        {/* 7. Pro showcase + Slack mock */}
         <ProShowcase />
+        {/* 8. Audience personas */}
+        <AudiencePersonas />
+        {/* 9. API section */}
         <ApiSection />
+        {/* 10. Enterprise section */}
         <EnterpriseShowcase />
+        {/* 11. Comparison table */}
         <PricingTable />
+        {/* 12. FAQ */}
         <FAQ />
       </main>
+      {/* 13. Final CTA + footer */}
       <Footer />
     </div>
   );
